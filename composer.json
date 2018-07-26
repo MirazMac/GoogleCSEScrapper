@@ -1,0 +1,14 @@
+{
+    "require": {
+        "rmccue/requests": "^1.7"
+    },
+    "optimize-autoloader": true,
+    "autoload": {
+        "psr-4": {
+            "MirazMac\\GoogleCSE\\": "src/"
+        }
+    },
+    "config": {
+        "vendor-dir": "vendor"
+    }
+}
