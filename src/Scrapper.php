@@ -46,7 +46,7 @@ class Scrapper
     /**
      * @var integer CSE token lifetime, in seconds
      */
-    const CSE_TOKEN_LIFETIME = 86400;
+    const CSE_TOKEN_LIFETIME = 900;
 
     /**
      * Scrapper options
@@ -98,8 +98,6 @@ class Scrapper
      * @param  integer $limit Results per page, currently supports 1-10
      * @param  array   $params Optional search parameters
      * @return object         If everything's allright, it will return an Element\ElementBag
-     *
-     * @throws \LogicException If response doesn't contain any results array
      */
     public function searchWeb($q, $start = 0, $limit = 10, array $params = [])
     {
@@ -109,11 +107,6 @@ class Scrapper
 
         // Perform the request
         $responseBody = $this->searchRequest($q, $params);
-
-        // Make sure we have the results before continuing
-        if (!isset($responseBody['results'])) {
-            throw new \LogicException("Failed to find search results from the response!");
-        }
 
         $parsedResults = [];
         foreach ($responseBody['results'] as $result) {
@@ -142,8 +135,6 @@ class Scrapper
      * @param  integer $limit Results per page, currently supports 1-20
      * @param  array   $params Optional search parameters
      * @return object         If everything's allright, it will return an Element\ElementBag
-     *
-     * @throws \LogicException If response doesn't contain any results array
      */
     public function searchImage($q, $start = 0, $limit = 20, array $params = [])
     {
@@ -154,11 +145,6 @@ class Scrapper
 
         // Perform the request
         $responseBody = $this->searchRequest($q, $params);
-
-        // Make sure we have the results before continuing
-        if (!isset($responseBody['results'])) {
-            throw new \LogicException("Failed to find search results from the response!");
-        }
 
         $parsedResults = [];
         foreach ($responseBody['results'] as $result) {
@@ -183,6 +169,8 @@ class Scrapper
      * @param  array   $params Optional search parameters
      * @return array           If everything is successful, will return an array
      *                         with the response data
+     *
+     * @throws \LogicException If response doesn't contain any results array
      */
     protected function searchRequest($q, array $params = [])
     {
@@ -226,6 +214,15 @@ class Scrapper
         };
 
         $body = $jsonp($body, true);
+
+
+        // Make sure we have the results before returning
+        if (!isset($body['results'])) {
+            // for fail-safe clear the cache to make sure next request
+            // doesn't face the same issue due to expired cse tokens
+            $this->clearCache();
+            throw new \LogicException("Failed to find search results from the response!");
+        }
 
         // Finally return the data, phew that was fun xD
         return $body;
@@ -279,6 +276,23 @@ class Scrapper
 
         // There you have it, your own CSE token
         return $tokenMatch[1];
+    }
+
+    /**
+     * Clear all cached data from storage
+     *
+     * @return boolean
+     */
+    public function clearCache()
+    {
+        $cseTokenPath = __DIR__ . sprintf(static::CSE_TOKEN_PATH, '*');
+        $files = glob($cseTokenPath);
+
+        foreach ($files as $file) {
+            @unlink($file);
+        }
+
+        return true;
     }
 
     /**
