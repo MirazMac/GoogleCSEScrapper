@@ -25,7 +25,6 @@ class WebResultElement
     public function __construct(array $result)
     {
         $this->result = $result;
-        r($result);
     }
 
     /**
