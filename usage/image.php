@@ -20,6 +20,11 @@ if ($spell) {
     $params['nfpr'] = $nfpr;
 }
 
+unset($_GET['spell'], $_GET['q'], $_GET['nfpr']);
+
+$get = @$_GET;
+$params = array_merge($params, $get);
+//r($params);
 ?>
 
 <div class="container">
