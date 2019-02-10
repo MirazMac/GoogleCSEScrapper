@@ -36,7 +36,7 @@ class Scrapper
     /**
      * @var string URL of the Google CSE Endpoint
      */
-    const RESULTS_ENDPOINT   = 'https://www.googleapis.com/customsearch/v1element';
+    const RESULTS_ENDPOINT   = 'https://cse.google.com/cse/element/v1';
 
     /**
      * @var string Path to CSE token storage
@@ -199,8 +199,10 @@ class Scrapper
             'googlehost'  => $this->options['google_host'],
             'source'      => 'gcsc',
             'gss'         => '.com',
-            'prettyPrint' => 'false',
+            'prettyPrint' => false,
+            'nocache'     => time(),
             'hl'          => $this->options['hl'],
+            'callback'    => 'google.search.cse.api' . rand(800, 2000),
         ];
 
         // Merge the parameters
@@ -212,10 +214,21 @@ class Scrapper
         // Perform the request
         $http     = static::$httpSession;
         $request  = $http->get($endpoint);
-        // Grab the response and decode it
-        $jsonData = json_decode($request->body, true);
+
+        $body = $request->body;
+
+        // @see https://stackoverflow.com/a/5081588/10594860
+        $jsonp = function ($jsonp, $assoc = false) {
+            if ($jsonp[0] !== '[' && $jsonp[0] !== '{') {
+                $jsonp = substr($jsonp, strpos($jsonp, '('));
+            }
+            return json_decode(trim($jsonp, '();'), $assoc);
+        };
+
+        $body = $jsonp($body, true);
+
         // Finally return the data, phew that was fun xD
-        return $jsonData;
+        return $body;
     }
 
     /**
