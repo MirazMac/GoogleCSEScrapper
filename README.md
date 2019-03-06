@@ -13,3 +13,6 @@ composer require mirazmac/google-cse-scrapper
 
 #### Usage
 For usage example please check the **usage** folder.
+
+## License
+GoogleCSEScrapper is licensed under, WTFPL - **DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE**
