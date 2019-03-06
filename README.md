@@ -16,3 +16,6 @@ For usage example please check the **usage** folder.
 
 ## License
 GoogleCSEScrapper is licensed under, WTFPL - **DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE**
+
+
+![alt text](https://i.postimg.cc/5y7cC6x2/fack.png "Fack On Google Project")
