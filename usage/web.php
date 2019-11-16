@@ -4,7 +4,10 @@ use MirazMac\GoogleCSE\Scrapper;
 
 require '../vendor/autoload.php';
 
-$cse = new Scrapper('partner-pub-9134522736300956:4140494421', []);
+$options = [
+];
+
+$cse = new Scrapper('partner-pub-9134522736300956:4140494421', $options);
 
 $q = isset($_GET['q']) ? trim($_GET['q']) : false;
 $safeQ = htmlspecialchars($q);

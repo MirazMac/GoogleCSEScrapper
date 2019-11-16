@@ -85,7 +85,8 @@ class Scrapper
         $defaults = [
             'cse_token'   => $cseToken,
             'google_host' => 'www.google.com',
-            'hl'          => 'en'
+            'hl'          => 'en',
+            'proxy'       => false,
         ];
         $this->options = array_merge($defaults, $options);
     }
@@ -201,6 +202,12 @@ class Scrapper
         $endpoint = static::RESULTS_ENDPOINT . "?{$query}";
         // Perform the request
         $http     = static::$httpSession;
+
+        // Add proxy if present
+        if ($this->options['proxy']) {
+            $http->proxy = $this->options['proxy'];
+        }
+
         $request  = $http->get($endpoint);
 
         $body = $request->body;
